@@ -44,3 +44,8 @@ export const books = [
   { id: 23, judul: "The 7 Habits of Highly Effective People", penulis: "Stephen R. Covey", cover_img: "/img/7-habits.jpg", deskripsi: "Tujuh kebiasaan untuk menjadi pribadi yang efektif, mulai dari proaktif hingga mengasah diri secara berkelanjutan.", harga: 120000, kategori_id: 6, populer: "tidak", stok: 9, tahun_terbit: 1989, created_at: "2025-01-15 09:10:00" },
   { id: 24, judul: "The Subtle Art of Not Giving a F*ck", penulis: "Mark Manson", cover_img: "/img/subtle-art.jpg", deskripsi: "Pendekatan jujur tentang memilih apa yang benar-benar layak dipedulikan agar hidup lebih bermakna.", harga: 99000, kategori_id: 6, populer: "tidak", stok: 5, tahun_terbit: 2016, created_at: "2025-01-15 09:15:00" },
 ];
+
+export const users = [
+  { id: 1, nama: "Admin Bookshelf", email: "admin@bookshelf.test", password: "admin123", role: "admin" },
+  { id: 2, nama: "Budi Pelanggan", email: "budi@bookshelf.test", password: "budi123", role: "pelanggan" },
+];

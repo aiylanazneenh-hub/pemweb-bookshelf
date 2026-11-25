@@ -5,10 +5,13 @@ import KategoriSection from "./components/KategoriSection";
 import Katalog from "./components/Katalog";
 import BookModal from "./components/BookModal";
 import Footer from "./components/Footer";
+import Chatbot from "./components/Chatbot";
+import { useToast } from "./components/ui/Toast";
 
 const filterAwal = { kata: "", kategori: 0, tahun: 0, urut: "terbaru" };
 
 export default function App() {
+  const toast = useToast();
   const [filter, setFilter] = useState(filterAwal);
   const [bukuDipilih, setBukuDipilih] = useState(null);
 
@@ -16,7 +19,7 @@ export default function App() {
 
   return (
     <>
-      <Navbar />
+      <Navbar onLogin={() => toast("Fitur login belum tersedia", "info")} />
 
       <main className="max-w-6xl mx-auto px-5">
         <Hero />
@@ -33,6 +36,7 @@ export default function App() {
 
       <Footer />
 
+      <Chatbot onDetail={setBukuDipilih} />
       {bukuDipilih && <BookModal book={bukuDipilih} onClose={tutupModal} />}
     </>
   );
