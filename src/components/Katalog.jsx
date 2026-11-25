@@ -11,7 +11,13 @@ const judulUrutan = {
 
 const inputClass = "border-2 border-slate-900 bg-white px-3 py-3";
 
-export default function Katalog({ filter, setFilter, onReset, onDetail }) {
+export default function Katalog({
+  filter,
+  setFilter,
+  onReset,
+  onDetail,
+  ringkasanUlasan = {},
+}) {
   const { kata, kategori, tahun, urut } = filter;
 
   // daftar tahun unik, dari yang terbaru
@@ -119,7 +125,12 @@ export default function Katalog({ filter, setFilter, onReset, onDetail }) {
         {hasil.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-7 gap-y-10">
             {hasil.map((b) => (
-              <BookCard key={b.id} book={b} onDetail={onDetail} />
+              <BookCard
+                key={b.id}
+                book={b}
+                onDetail={onDetail}
+                ringkasan={ringkasanUlasan[b.id]}
+              />
             ))}
           </div>
         ) : (

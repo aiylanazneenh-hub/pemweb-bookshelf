@@ -2,8 +2,16 @@ import { useEffect } from "react";
 import { categories } from "../data/books";
 import { rupiah } from "../utils";
 import BookCover from "./BookCover";
+import ReviewSection from "./ReviewSection";
 
-export default function BookModal({ book, onClose }) {
+export default function BookModal({
+  book,
+  onClose,
+  sudahDipilih = false,
+  onTambahPilihan,
+  ulasan = [],
+  onKirimUlasan,
+}) {
   // Esc menutup modal & halaman di belakang tidak ikut scroll
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && onClose();
@@ -48,14 +56,25 @@ export default function BookModal({ book, onClose }) {
             <p className="text-sm text-slate-600 mb-6">
               {book.stok <= 0 ? "Stok habis" : `Stok: ${book.stok}`}
             </p>
-            <button
-              onClick={onClose}
-              className="border-2 border-slate-900 px-5 py-3 font-bold hover:bg-slate-900 hover:text-[#F6F1E4]"
-            >
-              Tutup
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => onTambahPilihan(book)}
+                disabled={sudahDipilih}
+                className="border-2 border-slate-900 bg-slate-900 text-[#F6F1E4] px-5 py-3 font-bold hover:bg-amber-700 hover:border-amber-700 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:bg-slate-900 disabled:hover:border-slate-900"
+              >
+                {sudahDipilih ? "Sudah di Daftar Pilihan" : "Tambah ke Daftar Pilihan"}
+              </button>
+              <button
+                onClick={onClose}
+                className="border-2 border-slate-900 px-5 py-3 font-bold hover:bg-slate-900 hover:text-[#F6F1E4]"
+              >
+                Tutup
+              </button>
+            </div>
           </div>
         </div>
+
+        <ReviewSection bookId={book.id} ulasan={ulasan} onKirim={onKirimUlasan} />
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
 import { categories } from "../data/books";
 import { rupiah, statusStok } from "../utils";
 import BookCover from "./BookCover";
+import Stars from "./Stars";
 
-export default function BookCard({ book, onDetail }) {
+export default function BookCard({ book, onDetail, ringkasan }) {
   const status = statusStok(book);
   const kategori = categories.find((c) => c.id === book.kategori_id);
 
@@ -29,6 +30,19 @@ export default function BookCard({ book, onDetail }) {
       <p className="text-sm text-gray-500">
         {book.penulis} | {kategori?.nama_kategori}
       </p>
+
+      <div className="flex items-center gap-2 mt-1 text-sm">
+        {ringkasan && ringkasan.jumlah > 0 ? (
+          <>
+            <Stars nilai={ringkasan.rata} />
+            <span className="text-xs text-gray-500">
+              {ringkasan.rata.toFixed(1)} ({ringkasan.jumlah})
+            </span>
+          </>
+        ) : (
+          <span className="text-xs text-gray-400">Belum ada ulasan</span>
+        )}
+      </div>
 
       <div className="border-t border-amber-200 mt-2 pt-2 text-sm">
         <span>{rupiah(book.harga)}</span>

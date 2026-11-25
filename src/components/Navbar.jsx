@@ -1,4 +1,4 @@
-export default function Navbar({onLogin}) {
+export default function Navbar({ onLogin, jumlahPilihan = 0, onBukaPilihan }) {
   const link = "hover:underline";
   return (
     <header className="bg-slate-900 text-[#F6F1E4] sticky top-0 z-50">
@@ -6,19 +6,27 @@ export default function Navbar({onLogin}) {
         <a href="#beranda" className="text-2xl font-bold">
           BOOKSHELF
         </a>
-        
+
         <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm sm:text-base">
           <a href="#beranda" className={link}>Beranda</a>
           <a href="#kategori" className={link}>Kategori</a>
           <a href="#koleksi" className={link}>Koleksi</a>
         </div>
 
-        <button
-          onClick={onLogin}
-          className="bg-[#F6F1E4] text-slate-900 px-4 py-1.5 text-sm font-bold hover:bg-amber-200"
-        >
-          Login
-        </button>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={onBukaPilihan}
+            className="border-2 border-[#F6F1E4] px-4 py-1.5 text-sm font-bold hover:bg-[#F6F1E4] hover:text-slate-900"
+          >
+            Buku Dipilih (<span data-testid="counter-pilihan">{jumlahPilihan}</span>)
+          </button>
+          <button
+            onClick={onLogin}
+            className="bg-[#F6F1E4] text-slate-900 px-4 py-1.5 text-sm font-bold hover:bg-amber-200"
+          >
+            Login
+          </button>
+        </div>
       </nav>
     </header>
   );
