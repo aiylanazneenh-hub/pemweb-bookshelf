@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import KategoriSection from "./components/KategoriSection";
 import Katalog from "./components/Katalog";
 import BookModal from "./components/BookModal";
 import WishlistPanel from "./components/WishlistPanel";
@@ -108,9 +107,6 @@ export default function App() {
 
       <main className="max-w-6xl mx-auto px-5">
         <Hero />
-        <KategoriSection
-          onPilih={(id) => setFilter({ ...filterAwal, kategori: id })}
-        />
         <Katalog
           filter={filter}
           setFilter={setFilter}

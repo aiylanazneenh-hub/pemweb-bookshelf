@@ -9,7 +9,6 @@ export default function Navbar({ onLogin, jumlahPilihan = 0, onBukaPilihan }) {
 
         <div className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-sm sm:text-base">
           <a href="#beranda" className={link}>Beranda</a>
-          <a href="#kategori" className={link}>Kategori</a>
           <a href="#koleksi" className={link}>Koleksi</a>
         </div>
 
