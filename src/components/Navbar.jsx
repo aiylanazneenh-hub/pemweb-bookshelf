@@ -1,6 +1,12 @@
 import AuthStatus from "./AuthStatus";
 
-export default function Navbar({ jumlahPilihan = 0, onBukaPilihan }) {
+export default function Navbar({
+  jumlahPilihan = 0,
+  onBukaPilihan,
+  wishlist = [],
+  onHapus,
+  onDetail,
+}) {
   const link = "hover:underline";
   return (
     <header className="bg-slate-900 text-[#F6F1E4] sticky top-0 z-50 border-b-2 border-slate-900">
@@ -26,7 +32,7 @@ export default function Navbar({ jumlahPilihan = 0, onBukaPilihan }) {
             Buku Dipilih (<span data-testid="counter-pilihan">{jumlahPilihan}</span>)
           </button>
           
-          <AuthStatus />
+          <AuthStatus wishlist={wishlist} onHapus={onHapus} onDetail={onDetail} />
         </div>
 
       </nav>

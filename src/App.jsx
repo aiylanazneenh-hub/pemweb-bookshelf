@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Katalog from "./components/Katalog";
@@ -7,7 +7,7 @@ import WishlistPanel from "./components/WishlistPanel";
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
 import AuthModal from "./components/AuthModal";
-import { AuthProvider } from "./AuthContext";
+import { AuthProvider, useAuth } from "./AuthContext";
 import { useToast } from "./components/ui/Toast";
 import { books } from "./data/books";
 import {
@@ -30,6 +30,9 @@ function sekarang() {
 
 function AppIsi() {
   const toast = useToast();
+  const { user, openAuth } = useAuth();
+  const userId = user ? String(user.id || user.email) : null;
+
   const [filter, setFilter] = useState(filterAwal);
   const [bukuDipilih, setBukuDipilih] = useState(null);
 
@@ -40,12 +43,23 @@ function AppIsi() {
   const tutupModal = useCallback(() => setBukuDipilih(null), []);
   const tutupPanel = useCallback(() => setPanelBuka(false), []);
 
+  // Logout -> semua wishlist dikosongkan (belum disimpan ke Supabase)
+  useEffect(() => {
+    if (!user) setWishlist([]);
+  }, [user]);
+
+  // Hanya wishlist milik user yang sedang login
+  const wishlistUser = useMemo(
+    () => (userId ? wishlist.filter((w) => w.user_id === userId) : []),
+    [wishlist, userId]
+  );
+
   const bukuWishlist = useMemo(
     () =>
-      wishlist
+      wishlistUser
         .map((w) => books.find((b) => b.id === w.book_id))
         .filter(Boolean),
-    [wishlist]
+    [wishlistUser]
   );
 
   const ringkasanUlasan = useMemo(() => {
@@ -58,7 +72,13 @@ function AppIsi() {
   }, [ulasan]);
 
   const tambahWishlist = (book) => {
-    if (wishlist.some((w) => w.book_id === book.id)) {
+    // Wajib login dulu
+    if (!user) {
+      toast("Login dulu untuk menambah buku ke Daftar Pilihan", "info");
+      openAuth("login");
+      return;
+    }
+    if (wishlistUser.some((w) => w.book_id === book.id)) {
       toast("Buku ini sudah ada di Daftar Pilihan", "info");
       return;
     }
@@ -66,7 +86,7 @@ function AppIsi() {
       ...daftar,
       {
         id_wishlist: Date.now(),
-        user_id: USER_ID_SEMENTARA,
+        user_id: userId,
         book_id: book.id,
       },
     ]);
@@ -74,8 +94,16 @@ function AppIsi() {
   };
 
   const hapusWishlist = (book) => {
-    setWishlist((daftar) => daftar.filter((w) => w.book_id !== book.id));
+    setWishlist((daftar) =>
+      daftar.filter((w) => !(w.book_id === book.id && w.user_id === userId))
+    );
     toast(`"${book.judul}" dihapus dari Daftar Pilihan`, "info");
+  };
+
+  // Dipakai panel samping dan profil: tutup panel, lalu buka detail buku
+  const bukaDetailDariPilihan = (b) => {
+    setPanelBuka(false);
+    setBukuDipilih(b);
   };
 
   const kirimUlasan = ({ book_id, rating, komentar }) => {
@@ -97,8 +125,11 @@ function AppIsi() {
   return (
     <>
       <Navbar
-        jumlahPilihan={wishlist.length}
+        jumlahPilihan={wishlistUser.length}
         onBukaPilihan={() => setPanelBuka(true)}
+        wishlist={bukuWishlist}
+        onHapus={hapusWishlist}
+        onDetail={bukaDetailDariPilihan}
       />
 
       <main className="max-w-6xl mx-auto px-5">
@@ -120,7 +151,7 @@ function AppIsi() {
         <BookModal
           book={bukuDipilih}
           onClose={tutupModal}
-          sudahDipilih={wishlist.some((w) => w.book_id === bukuDipilih.id)}
+          sudahDipilih={wishlistUser.some((w) => w.book_id === bukuDipilih.id)}
           onTambahPilihan={tambahWishlist}
           ulasan={ulasan.filter((u) => u.book_id === bukuDipilih.id)}
           onKirimUlasan={kirimUlasan}
@@ -132,10 +163,7 @@ function AppIsi() {
           buku={bukuWishlist}
           onClose={tutupPanel}
           onHapus={hapusWishlist}
-          onDetail={(b) => {
-            setPanelBuka(false);
-            setBukuDipilih(b);
-          }}
+          onDetail={bukaDetailDariPilihan}
         />
       )}
 

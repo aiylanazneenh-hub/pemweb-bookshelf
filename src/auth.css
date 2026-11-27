@@ -6,23 +6,26 @@
 
 .auth-backdrop {
   position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.6);
-  display: grid;
-  place-items: center;
-  padding: 16px;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: 1000;
 }
 
 .auth-card {
-  position: relative;
+  background: #fdfbf7; /* Sesuaikan warna latar belakang aslimu */
+  padding: 32px;
+  border-radius: 8px;
   width: 100%;
-  max-width: 420px;
-  background: var(--auth-cream);
-  color: var(--auth-navy);
-  border: 2px solid var(--auth-navy);
-  padding: 28px 28px 28px;
-  font-family: inherit;
+  max-width: 420px; /* <--- PENTING: Batasi lebar maksimal agar tidak kebesaran */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  box-sizing: border-box;
 }
 
 .auth-card h2 {
