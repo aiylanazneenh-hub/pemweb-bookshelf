@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import Katalog from "./components/Katalog";
@@ -6,6 +6,8 @@ import BookModal from "./components/BookModal";
 import WishlistPanel from "./components/WishlistPanel";
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
+import AuthModal from "./components/AuthModal";
+import { AuthProvider, useAuth } from "./AuthContext";
 import { useToast } from "./components/ui/Toast";
 import { books } from "./data/books";
 import {
@@ -17,7 +19,6 @@ import { rataRating } from "./utils";
 
 const filterAwal = { kata: "", kategori: 0, tahun: 0, urut: "terbaru" };
 
-// "2025-03-10 19:40:00" (format sama dengan kolom created_at di database)
 function sekarang() {
   const p = (n) => String(n).padStart(2, "0");
   const d = new Date();
@@ -27,13 +28,14 @@ function sekarang() {
   );
 }
 
-export default function App() {
+function AppIsi() {
   const toast = useToast();
+  const { user, openAuth } = useAuth();
+  const userId = user ? String(user.id || user.email) : null;
+
   const [filter, setFilter] = useState(filterAwal);
   const [bukuDipilih, setBukuDipilih] = useState(null);
 
-  // Data dummy: nanti diganti data dari API wishlist (Orang 4) dan ulasan (Orang 5).
-  // wishlist: [{ id_wishlist, user_id, book_id }]
   const [wishlist, setWishlist] = useState([]);
   const [ulasan, setUlasan] = useState(ulasanAwal);
   const [panelBuka, setPanelBuka] = useState(false);
@@ -41,16 +43,25 @@ export default function App() {
   const tutupModal = useCallback(() => setBukuDipilih(null), []);
   const tutupPanel = useCallback(() => setPanelBuka(false), []);
 
-  // buku-buku di wishlist (urutan sesuai waktu ditambahkan)
-  const bukuWishlist = useMemo(
-    () =>
-      wishlist
-        .map((w) => books.find((b) => b.id === w.book_id))
-        .filter(Boolean),
-    [wishlist]
+  // Logout -> semua wishlist dikosongkan (belum disimpan ke Supabase)
+  useEffect(() => {
+    if (!user) setWishlist([]);
+  }, [user]);
+
+  // Hanya wishlist milik user yang sedang login
+  const wishlistUser = useMemo(
+    () => (userId ? wishlist.filter((w) => w.user_id === userId) : []),
+    [wishlist, userId]
   );
 
-  // { [book_id]: { rata, jumlah } } untuk bintang di kartu buku
+  const bukuWishlist = useMemo(
+    () =>
+      wishlistUser
+        .map((w) => books.find((b) => b.id === w.book_id))
+        .filter(Boolean),
+    [wishlistUser]
+  );
+
   const ringkasanUlasan = useMemo(() => {
     const hasil = {};
     for (const b of books) {
@@ -61,7 +72,13 @@ export default function App() {
   }, [ulasan]);
 
   const tambahWishlist = (book) => {
-    if (wishlist.some((w) => w.book_id === book.id)) {
+    // Wajib login dulu
+    if (!user) {
+      toast("Login dulu untuk menambah buku ke Daftar Pilihan", "info");
+      openAuth("login");
+      return;
+    }
+    if (wishlistUser.some((w) => w.book_id === book.id)) {
       toast("Buku ini sudah ada di Daftar Pilihan", "info");
       return;
     }
@@ -69,7 +86,7 @@ export default function App() {
       ...daftar,
       {
         id_wishlist: Date.now(),
-        user_id: USER_ID_SEMENTARA,
+        user_id: userId,
         book_id: book.id,
       },
     ]);
@@ -77,8 +94,16 @@ export default function App() {
   };
 
   const hapusWishlist = (book) => {
-    setWishlist((daftar) => daftar.filter((w) => w.book_id !== book.id));
+    setWishlist((daftar) =>
+      daftar.filter((w) => !(w.book_id === book.id && w.user_id === userId))
+    );
     toast(`"${book.judul}" dihapus dari Daftar Pilihan`, "info");
+  };
+
+  // Dipakai panel samping dan profil: tutup panel, lalu buka detail buku
+  const bukaDetailDariPilihan = (b) => {
+    setPanelBuka(false);
+    setBukuDipilih(b);
   };
 
   const kirimUlasan = ({ book_id, rating, komentar }) => {
@@ -100,9 +125,11 @@ export default function App() {
   return (
     <>
       <Navbar
-        onLogin={() => toast("Fitur login belum tersedia", "info")}
-        jumlahPilihan={wishlist.length}
+        jumlahPilihan={wishlistUser.length}
         onBukaPilihan={() => setPanelBuka(true)}
+        wishlist={bukuWishlist}
+        onHapus={hapusWishlist}
+        onDetail={bukaDetailDariPilihan}
       />
 
       <main className="max-w-6xl mx-auto px-5">
@@ -124,7 +151,7 @@ export default function App() {
         <BookModal
           book={bukuDipilih}
           onClose={tutupModal}
-          sudahDipilih={wishlist.some((w) => w.book_id === bukuDipilih.id)}
+          sudahDipilih={wishlistUser.some((w) => w.book_id === bukuDipilih.id)}
           onTambahPilihan={tambahWishlist}
           ulasan={ulasan.filter((u) => u.book_id === bukuDipilih.id)}
           onKirimUlasan={kirimUlasan}
@@ -136,12 +163,19 @@ export default function App() {
           buku={bukuWishlist}
           onClose={tutupPanel}
           onHapus={hapusWishlist}
-          onDetail={(b) => {
-            setPanelBuka(false);
-            setBukuDipilih(b);
-          }}
+          onDetail={bukaDetailDariPilihan}
         />
       )}
+
+      <AuthModal />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppIsi />
+    </AuthProvider>
   );
 }

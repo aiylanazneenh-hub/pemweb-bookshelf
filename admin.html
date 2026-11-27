@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Bookshelf</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- ADMIN GUARD: Melindungi halaman dari akses non-admin -->
+  <script src="/admin-guard.js"></script>
+</head>
+<body class="bg-[#F6F1E4] text-slate-900 min-h-screen">
+
+  <!-- Navbar Admin (Menyesuaikan style header utama) -->
+  <header class="bg-slate-900 text-[#F6F1E4] border-b-2 border-slate-900 shadow-md">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <span class="text-2xl font-serif font-bold tracking-wider">BOOKSHELF</span>
+        <span class="bg-amber-600 text-white text-xs px-2 py-0.5 font-bold uppercase tracking-widest border border-slate-900">Admin Panel</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="admin-name" class="text-sm text-amber-300 font-medium">Halo, Admin</span>
+        <button 
+          onclick="logoutAdmin()" 
+          class="border-2 border-[#F6F1E4] bg-transparent text-[#F6F1E4] px-4 py-1.5 text-sm font-bold hover:bg-[#7B202B] hover:border-[#7B202B] transition-colors"
+        >
+          Keluar
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Konten Utama Dashboard -->
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    <div class="mb-8 border-b-2 border-slate-900 pb-4">
+      <h1 class="text-3xl font-serif font-bold tracking-tight">Dashboard Administrator</h1>
+      <p class="text-slate-700 mt-1">Kelola data buku, pantau statistik, dan atur sistem perpustakaan.</p>
+    </div>
+
+    <!-- Kotak Statistik (Desain border tegas khas Bookshelf) -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white p-6 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
+        <h3 class="text-slate-600 font-bold uppercase text-xs tracking-wider">Total Buku</h3>
+        <p class="text-4xl font-serif font-bold text-slate-900 mt-2">--</p>
+      </div>
+      <div class="bg-white p-6 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
+        <h3 class="text-slate-600 font-bold uppercase text-xs tracking-wider">Pengguna Terdaftar</h3>
+        <p class="text-4xl font-serif font-bold text-slate-900 mt-2">--</p>
+      </div>
+      <div class="bg-white p-6 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
+        <h3 class="text-slate-600 font-bold uppercase text-xs tracking-wider">Total Ulasan Masuk</h3>
+        <p class="text-4xl font-serif font-bold text-slate-900 mt-2">--</p>
+      </div>
+    </div>
+
+    <!-- Area Konten / Kelola Data -->
+    <div class="bg-white p-6 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-serif font-bold">Daftar Buku & Manajemen</h2>
+        <button class="border-2 border-slate-900 bg-slate-900 text-[#F6F1E4] px-4 py-2 font-bold text-sm hover:bg-amber-700 hover:border-amber-700 transition-colors">
+          + Tambah Buku Baru
+        </button>
+      </div>
+      <p class="text-slate-700 text-sm">
+        Gunakan panel ini untuk mengontrol data buku yang tampil di katalog utama pembaca.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    // Menampilkan nama admin dari localStorage
+    document.addEventListener("DOMContentLoaded", () => {
+      const userStr = localStorage.getItem("user");
+      if (userStr) {
+        try {
+          const user = JSON.parse(userStr);
+          const nameEl = document.getElementById("admin-name");
+          if (nameEl) nameEl.textContent = `Halo, ${user.nama || "Admin"}`;
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    });
+
+    function logoutAdmin() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/index.html";
+    }
+  </script>
+</body>
+</html>

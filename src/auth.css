@@ -1,0 +1,134 @@
+:root {
+  --auth-navy: #0f172a; /* slate-900 */
+  --auth-cream: #F6F1E4;
+  --auth-orange: #d97706; /* amber-600 */
+}
+
+.auth-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.auth-card {
+  background: #fdfbf7; /* Sesuaikan warna latar belakang aslimu */
+  padding: 32px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 420px; /* <--- PENTING: Batasi lebar maksimal agar tidak kebesaran */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  box-sizing: border-box;
+}
+
+.auth-card h2 {
+  margin: 20px 0 18px;
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.auth-close {
+  position: absolute;
+  top: 6px;
+  right: 12px;
+  border: 0;
+  background: none;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--auth-navy);
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 2px solid var(--auth-navy);
+  margin-right: 28px;
+}
+
+.auth-tabs button {
+  flex: 1;
+  padding: 10px 0;
+  border: 0;
+  border-bottom: 4px solid transparent;
+  margin-bottom: -2px;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--auth-navy);
+  opacity: 0.6;
+}
+
+.auth-tabs button.active {
+  opacity: 1;
+  font-weight: 800;
+  border-bottom-color: var(--auth-orange);
+}
+
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.auth-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.auth-card input {
+  padding: 12px 14px;
+  border: 2px solid var(--auth-navy);
+  border-radius: 0;
+  background: #fff;
+  color: var(--auth-navy);
+  font: inherit;
+  font-weight: 400;
+}
+
+.auth-error {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--auth-orange);
+  background: #fff1dc;
+  font-size: 0.9rem;
+}
+
+.auth-submit {
+  margin-top: 4px;
+  padding: 14px;
+  border: 2px solid var(--auth-navy);
+  border-radius: 0;
+  background: var(--auth-navy);
+  color: var(--auth-cream);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.auth-submit:hover:not(:disabled) {
+  background: var(--auth-orange);
+  border-color: var(--auth-orange);
+}
+
+.auth-submit:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.auth-card button:focus-visible,
+.auth-card input:focus-visible {
+  outline: 3px solid var(--auth-orange);
+  outline-offset: 2px;
+}
