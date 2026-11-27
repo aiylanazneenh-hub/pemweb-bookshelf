@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { Router } from "express";
-import { books, categories } from "../../src/data/books.js";
+import { books, categories, simpanBooks } from "../store.js";
 
 const router = Router();
 
@@ -118,8 +118,12 @@ function hapusCoverUnggahan(url) {
 const sekarang = () => new Date().toISOString().replace("T", " ").slice(0, 19);
 
 router.post("/books", (req, res) => {
-    let cover_img = "";
-    if (req.body.cover_data) {
+  const { errors, data } = validasiBuku(req.body || {});
+  if (Object.keys(errors).length) {
+    return res.status(400).json({ pesan: "Data buku tidak valid.", errors });
+  }
+  let cover_img = "";
+  if (req.body.cover_data) {
     const hasil = simpanCover(req.body.cover_data);
     if (hasil.error) {
       return res.status(400).json({ pesan: "Data buku tidak valid.", errors: { cover_img: hasil.error } });
@@ -133,6 +137,7 @@ router.post("/books", (req, res) => {
     created_at: sekarang(),
   };
   books.push(buku);
+  simpanBooks();
   res.status(201).json({ success: true, data: buku, message: "Buku berhasil ditambahkan" });
 });
 
@@ -144,7 +149,7 @@ router.put("/books/:id", (req, res) => {
   if (Object.keys(errors).length) {
     return res.status(400).json({ pesan: "Data buku tidak valid.", errors });
   }
-    if (req.body.cover_data) {
+  if (req.body.cover_data) {
     const hasil = simpanCover(req.body.cover_data);
     if (hasil.error) {
       return res.status(400).json({ pesan: "Data buku tidak valid.", errors: { cover_img: hasil.error } });
@@ -153,6 +158,7 @@ router.put("/books/:id", (req, res) => {
     buku.cover_img = hasil.url;
   }
   Object.assign(buku, data);
+  simpanBooks();
   res.json({ success: true, data: buku, message: "Buku berhasil diperbarui" });
 });
 
@@ -160,6 +166,7 @@ router.delete("/books/:id", (req, res) => {
   const index = books.findIndex((b) => b.id === Number(req.params.id));
   if (index === -1) return res.status(404).json({ pesan: "Buku tidak ditemukan." });
   const [dihapus] = books.splice(index, 1);
+  simpanBooks();
   hapusCoverUnggahan(dihapus.cover_img);
   res.json({ success: true, data: dihapus, message: "Buku berhasil dihapus" });
 });

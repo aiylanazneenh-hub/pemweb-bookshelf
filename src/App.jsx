@@ -9,7 +9,8 @@ import Chatbot from "./components/Chatbot";
 import AuthModal from "./components/AuthModal";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { useToast } from "./components/ui/Toast";
-import { books } from "./data/books";
+import { books as bukuAwal} from "./data/books";
+import { ambilBuku } from "./api";
 import {
   NAMA_USER_SEMENTARA,
   USER_ID_SEMENTARA,

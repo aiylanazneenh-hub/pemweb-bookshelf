@@ -2,7 +2,7 @@
 // Endpoint: POST /api/chat   body: { pesan: "..." }
 // Balasan : { balasan: "teks", buku: [ ...maksimal 3 buku ] }
 import { Router } from "express";
-import { books, categories } from "../../src/data/books.js";
+import { books, categories } from "../store.js";
 
 const router = Router();
 

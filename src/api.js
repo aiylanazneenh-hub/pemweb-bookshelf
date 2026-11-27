@@ -26,3 +26,5 @@ async function request(path, options = {}) {
 
 export const kirimPesanChat = (pesan) =>
   request("/chat", { method: "POST", body: JSON.stringify({ pesan }) });
+
+export const ambilBuku = () => request("/books?sort=terbaru");
