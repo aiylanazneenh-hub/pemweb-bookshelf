@@ -6,6 +6,8 @@ import BookModal from "./components/BookModal";
 import WishlistPanel from "./components/WishlistPanel";
 import Footer from "./components/Footer";
 import Chatbot from "./components/Chatbot";
+import AuthModal from "./components/AuthModal";
+import { AuthProvider } from "./AuthContext";
 import { useToast } from "./components/ui/Toast";
 import { books } from "./data/books";
 import {
@@ -17,7 +19,6 @@ import { rataRating } from "./utils";
 
 const filterAwal = { kata: "", kategori: 0, tahun: 0, urut: "terbaru" };
 
-// "2025-03-10 19:40:00" (format sama dengan kolom created_at di database)
 function sekarang() {
   const p = (n) => String(n).padStart(2, "0");
   const d = new Date();
@@ -27,13 +28,11 @@ function sekarang() {
   );
 }
 
-export default function App() {
+function AppIsi() {
   const toast = useToast();
   const [filter, setFilter] = useState(filterAwal);
   const [bukuDipilih, setBukuDipilih] = useState(null);
 
-  // Data dummy: nanti diganti data dari API wishlist (Orang 4) dan ulasan (Orang 5).
-  // wishlist: [{ id_wishlist, user_id, book_id }]
   const [wishlist, setWishlist] = useState([]);
   const [ulasan, setUlasan] = useState(ulasanAwal);
   const [panelBuka, setPanelBuka] = useState(false);
@@ -41,7 +40,6 @@ export default function App() {
   const tutupModal = useCallback(() => setBukuDipilih(null), []);
   const tutupPanel = useCallback(() => setPanelBuka(false), []);
 
-  // buku-buku di wishlist (urutan sesuai waktu ditambahkan)
   const bukuWishlist = useMemo(
     () =>
       wishlist
@@ -50,7 +48,6 @@ export default function App() {
     [wishlist]
   );
 
-  // { [book_id]: { rata, jumlah } } untuk bintang di kartu buku
   const ringkasanUlasan = useMemo(() => {
     const hasil = {};
     for (const b of books) {
@@ -100,7 +97,6 @@ export default function App() {
   return (
     <>
       <Navbar
-        onLogin={() => toast("Fitur login belum tersedia", "info")}
         jumlahPilihan={wishlist.length}
         onBukaPilihan={() => setPanelBuka(true)}
       />
@@ -142,6 +138,16 @@ export default function App() {
           }}
         />
       )}
+
+      <AuthModal />
     </>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppIsi />
+    </AuthProvider>
   );
 }
