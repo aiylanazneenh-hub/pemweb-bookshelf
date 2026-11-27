@@ -28,7 +28,7 @@ export async function login(body) {
         localStorage.setItem(USER_KEY, JSON.stringify(safeUser));
         resolve({ token: dummyToken, user: safeUser });
       } else {
-        reject(new Error("Email atau password salah! Coba: admin@perpus.com / 123456"));
+        reject(new Error("Email atau password salah atau tidak terdaftar, coba lagi"));
       }
     }, 300);
   });

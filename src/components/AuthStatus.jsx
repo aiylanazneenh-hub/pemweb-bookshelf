@@ -79,8 +79,7 @@ export default function AuthStatus({ wishlist = [], onHapus, onDetail }) {
                 </p>
                 {/* "#/admin" = halaman AdminPage React. Kalau tim pakai alamat lain, sesuaikan. */}
                 <a
-                  href="#/admin"
-                  onClick={() => setShowProfile(false)}
+                  href="/admin.html"
                   className="inline-block w-full text-center bg-slate-900 text-[#F6F1E4] font-bold py-2 px-4 border-2 border-slate-900 hover:bg-amber-600 transition"
                 >
                   Buka Halaman Kelola Buku (Admin Panel) →

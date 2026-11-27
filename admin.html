@@ -42,7 +42,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <div class="bg-white p-6 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
         <h3 class="text-slate-600 font-bold uppercase text-xs tracking-wider">Total Buku</h3>
-        <p class="text-4xl font-serif font-bold text-slate-900 mt-2">--</p>
+<p id="stat-total-buku" class="text-4xl font-serif font-bold text-slate-900 mt-2">--</p>
       </div>
       <div class="bg-white p-6 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
         <h3 class="text-slate-600 font-bold uppercase text-xs tracking-wider">Pengguna Terdaftar</h3>
@@ -55,32 +55,449 @@
     </div>
 
     <!-- Area Konten / Kelola Data -->
+        <!-- Area Konten / Kelola Data -->
     <div class="bg-white p-6 border-2 border-slate-900 shadow-[4px_4px_0px_0px_rgba(15,23,42,1)]">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-xl font-serif font-bold">Daftar Buku & Manajemen</h2>
-        <button class="border-2 border-slate-900 bg-slate-900 text-[#F6F1E4] px-4 py-2 font-bold text-sm hover:bg-amber-700 hover:border-amber-700 transition-colors">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+        <h2 class="text-xl font-serif font-bold">Daftar Buku &amp; Manajemen</h2>
+        <button id="btn-tambah" type="button" class="border-2 border-slate-900 bg-slate-900 text-[#F6F1E4] px-4 py-2 font-bold text-sm hover:bg-amber-700 hover:border-amber-700 transition-colors">
           + Tambah Buku Baru
         </button>
       </div>
-      <p class="text-slate-700 text-sm">
-        Gunakan panel ini untuk mengontrol data buku yang tampil di katalog utama pembaca.
-      </p>
+
+      <!-- Tabel daftar buku -->
+      <div class="overflow-x-auto border-2 border-slate-900">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-slate-900 text-[#F6F1E4] uppercase text-xs tracking-wider">
+            <tr>
+              <th class="px-3 py-3">Cover</th>
+              <th class="px-3 py-3">Judul</th>
+              <th class="px-3 py-3">Penulis</th>
+              <th class="px-3 py-3">Kategori</th>
+              <th class="px-3 py-3 text-right">Harga</th>
+              <th class="px-3 py-3 text-right">Stok</th>
+              <th class="px-3 py-3 text-center">Tahun</th>
+              <th class="px-3 py-3 text-center">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabel-buku" class="divide-y divide-slate-300"></tbody>
+        </table>
+      </div>
     </div>
+
+    <!-- Modal form tambah / edit buku -->
+    <div id="modal-form" class="hidden fixed inset-0 z-[70] bg-slate-900/60 overflow-y-auto p-4" role="dialog" aria-modal="true" aria-labelledby="modal-form-judul">
+      <div class="bg-[#F6F1E4] border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] max-w-2xl mx-auto my-8">
+        <div class="flex justify-between items-center px-6 py-4 border-b-2 border-slate-900 bg-slate-900 text-[#F6F1E4]">
+          <h3 id="modal-form-judul" class="text-lg font-serif font-bold">Tambah Buku Baru</h3>
+          <button type="button" data-tutup-form aria-label="Tutup form" class="text-2xl leading-none hover:text-amber-300">&times;</button>
+        </div>
+
+        <form id="form-buku" novalidate class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <input type="hidden" id="f-id" />
+
+          <div class="sm:col-span-2">
+            <label for="f-judul" class="block text-xs font-bold uppercase tracking-wider mb-1">Judul</label>
+            <input id="f-judul" type="text" maxlength="200" class="w-full border-2 border-slate-900 bg-white px-3 py-2 focus:outline-none focus:border-amber-600" />
+            <p data-error="judul" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label for="f-penulis" class="block text-xs font-bold uppercase tracking-wider mb-1">Penulis</label>
+            <input id="f-penulis" type="text" maxlength="150" class="w-full border-2 border-slate-900 bg-white px-3 py-2 focus:outline-none focus:border-amber-600" />
+            <p data-error="penulis" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label for="f-kategori" class="block text-xs font-bold uppercase tracking-wider mb-1">Kategori</label>
+            <select id="f-kategori" class="w-full border-2 border-slate-900 bg-white px-3 py-2 focus:outline-none focus:border-amber-600">
+              <option value="">Pilih kategori</option>
+            </select>
+            <p data-error="kategori_id" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label for="f-harga" class="block text-xs font-bold uppercase tracking-wider mb-1">Harga (Rp)</label>
+            <input id="f-harga" type="number" min="0" step="1000" class="w-full border-2 border-slate-900 bg-white px-3 py-2 focus:outline-none focus:border-amber-600" />
+            <p data-error="harga" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label for="f-stok" class="block text-xs font-bold uppercase tracking-wider mb-1">Stok</label>
+            <input id="f-stok" type="number" min="0" step="1" class="w-full border-2 border-slate-900 bg-white px-3 py-2 focus:outline-none focus:border-amber-600" />
+            <p data-error="stok" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label for="f-tahun" class="block text-xs font-bold uppercase tracking-wider mb-1">Tahun Terbit</label>
+            <input id="f-tahun" type="number" min="1000" step="1" class="w-full border-2 border-slate-900 bg-white px-3 py-2 focus:outline-none focus:border-amber-600" />
+            <p data-error="tahun_terbit" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div>
+            <label for="f-cover" class="block text-xs font-bold uppercase tracking-wider mb-1">Cover (gambar)</label>
+            <input id="f-cover" type="file" accept="image/png,image/jpeg,image/webp" class="w-full border-2 border-slate-900 bg-white px-2 py-1.5 text-sm file:mr-3 file:border-0 file:bg-slate-900 file:text-[#F6F1E4] file:px-3 file:py-1 file:font-bold file:cursor-pointer" />
+            <p data-error="cover_img" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div class="sm:col-span-2">
+            <label for="f-deskripsi" class="block text-xs font-bold uppercase tracking-wider mb-1">Deskripsi</label>
+            <textarea id="f-deskripsi" rows="4" maxlength="1000" class="w-full border-2 border-slate-900 bg-white px-3 py-2 focus:outline-none focus:border-amber-600"></textarea>
+            <p data-error="deskripsi" class="text-xs text-[#7B202B] mt-1 hidden"></p>
+          </div>
+
+          <div class="sm:col-span-2 flex items-center gap-3">
+            <div id="cover-preview" class="w-16 h-24 border-2 border-slate-900 bg-slate-200 flex items-center justify-center text-[10px] text-slate-500 text-center overflow-hidden shrink-0">Preview</div>
+            <p class="text-xs text-slate-600">Pilih gambar PNG, JPG, atau WEBP. Preview muncul otomatis dan gambar dikecilkan sebelum diunggah. Saat edit, kosongkan jika cover tidak diganti.</p>
+          </div>
+
+          <div class="sm:col-span-2 flex justify-end gap-3 pt-2 border-t-2 border-slate-900">
+            <button type="button" data-tutup-form class="border-2 border-slate-900 bg-white px-4 py-2 font-bold text-sm hover:bg-slate-200 transition-colors">Batal</button>
+            <button id="btn-simpan" type="submit" class="border-2 border-slate-900 bg-slate-900 text-[#F6F1E4] px-4 py-2 font-bold text-sm hover:bg-amber-700 hover:border-amber-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Dialog konfirmasi hapus -->
+    <div id="modal-hapus" class="hidden fixed inset-0 z-[70] bg-slate-900/60 flex items-center justify-center p-4" role="alertdialog" aria-modal="true" aria-labelledby="hapus-judul">
+      <div class="bg-[#F6F1E4] border-2 border-slate-900 shadow-[6px_6px_0px_0px_rgba(15,23,42,1)] max-w-md w-full p-6">
+        <h3 id="hapus-judul" class="text-lg font-serif font-bold mb-2">Hapus buku ini?</h3>
+        <p class="text-sm text-slate-700 mb-6">
+          Buku <strong id="hapus-nama"></strong> akan dihapus dari katalog. Tindakan ini tidak dapat dibatalkan.
+        </p>
+        <div class="flex justify-end gap-3">
+          <button id="hapus-batal" type="button" class="border-2 border-slate-900 bg-white px-4 py-2 font-bold text-sm hover:bg-slate-200 transition-colors">Batal</button>
+          <button id="hapus-ya" type="button" class="border-2 border-[#7B202B] bg-[#7B202B] text-white px-4 py-2 font-bold text-sm hover:bg-red-900 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">Ya, Hapus</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wadah toast (gaya sama dengan ui/Toast.jsx) -->
+    <div id="toast-wadah" aria-live="polite" class="fixed top-20 right-4 z-[80] flex flex-col gap-2 w-72 max-w-[calc(100vw-2rem)]"></div>
   </main>
 
-  <script>
-    // Menampilkan nama admin dari localStorage
+    <script>
+    // ===== Toast (versi vanilla dari src/components/ui/Toast.jsx) =====
+    const TOAST_WARNA = { sukses: "bg-emerald-700", error: "bg-[#7B202B]", info: "bg-slate-900" };
+    function toast(pesan, tipe = "info") {
+      const el = document.createElement("div");
+      el.setAttribute("role", "status");
+      el.className = `${TOAST_WARNA[tipe] || TOAST_WARNA.info} text-white text-sm px-4 py-3 shadow-lg flex justify-between gap-3`;
+      const teks = document.createElement("span");
+      teks.textContent = pesan;
+      const tutup = document.createElement("button");
+      tutup.setAttribute("aria-label", "Tutup notifikasi");
+      tutup.innerHTML = "&times;";
+      tutup.onclick = () => el.remove();
+      el.append(teks, tutup);
+      document.getElementById("toast-wadah").appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
+
+    // ===== API =====
+    async function api(path, options = {}) {
+      let res;
+      try {
+        res = await fetch("/api" + path, {
+          ...options,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + (localStorage.getItem("token") || ""),
+          },
+        });
+      } catch {
+        throw new Error("Tidak bisa terhubung ke server. Pastikan backend sudah berjalan.");
+      }
+      let data = null;
+      try { data = await res.json(); } catch { /* bukan JSON */ }
+      if (!res.ok) {
+        const err = new Error(data?.pesan || `Permintaan gagal (${res.status})`);
+        err.errors = data?.errors || null;
+        throw err;
+      }
+      return data;
+    }
+
+    // ===== Util =====
+    const $ = (id) => document.getElementById(id);
+    const rupiah = (n) => "Rp " + Number(n).toLocaleString("id-ID");
+    const esc = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+    let daftarBuku = [];
+    let daftarKategori = [];
+    let bukuDihapus = null;
+
+    let coverBaru = null; // data URL gambar yang baru dipilih
+    let coverLama = "";   // path cover yang sudah tersimpan (saat edit)
+
+    const namaKategori = (id) => daftarKategori.find((k) => k.id === id)?.nama_kategori || "-";
+
+    // ===== Tabel =====
+    function renderTabel() {
+      const tbody = $("tabel-buku");
+      $("stat-total-buku").textContent = daftarBuku.length;
+
+      if (daftarBuku.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-3 py-8 text-center text-slate-600">Belum ada buku. Klik "Tambah Buku Baru" untuk menambahkan.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = daftarBuku.map((b) => `
+        <tr class="hover:bg-amber-50">
+          <td class="px-3 py-2">
+            <div class="w-10 h-14 bg-slate-300 border border-slate-900 overflow-hidden">
+              ${b.cover_img ? `<img src="${esc(b.cover_img)}" alt="" class="w-full h-full object-cover" onerror="this.remove()" />` : ""}
+            </div>
+          </td>
+          <td class="px-3 py-2 font-bold">${esc(b.judul)}</td>
+          <td class="px-3 py-2">${esc(b.penulis)}</td>
+          <td class="px-3 py-2">${esc(namaKategori(b.kategori_id))}</td>
+          <td class="px-3 py-2 text-right whitespace-nowrap">${rupiah(b.harga)}</td>
+          <td class="px-3 py-2 text-right ${b.stok <= 0 ? "text-[#7B202B] font-bold" : ""}">${b.stok}</td>
+          <td class="px-3 py-2 text-center">${b.tahun_terbit}</td>
+          <td class="px-3 py-2 text-center whitespace-nowrap">
+            <button type="button" data-edit="${b.id}" class="border-2 border-slate-900 bg-white px-3 py-1 text-xs font-bold hover:bg-amber-600 hover:text-white transition-colors">Edit</button>
+            <button type="button" data-hapus="${b.id}" class="border-2 border-[#7B202B] text-[#7B202B] px-3 py-1 text-xs font-bold hover:bg-[#7B202B] hover:text-white transition-colors">Hapus</button>
+          </td>
+        </tr>`).join("");
+    }
+
+    async function muatData() {
+      const tbody = $("tabel-buku");
+      tbody.innerHTML = `<tr><td colspan="8" class="px-3 py-8 text-center text-slate-600">Memuat data buku...</td></tr>`;
+      try {
+        const [buku, kategori] = await Promise.all([api("/books?sort=terbaru"), api("/categories")]);
+        daftarBuku = buku.data;
+        daftarKategori = kategori.data;
+        $("f-kategori").innerHTML =
+          `<option value="">Pilih kategori</option>` +
+          daftarKategori.map((k) => `<option value="${k.id}">${esc(k.nama_kategori)}</option>`).join("");
+        renderTabel();
+      } catch (e) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-3 py-8 text-center text-[#7B202B]">${esc(e.message)}</td></tr>`;
+        toast(e.message, "error");
+      }
+    }
+
+    // ===== Form tambah / edit =====
+    const FIELD = {
+      judul: "f-judul", penulis: "f-penulis", kategori_id: "f-kategori", harga: "f-harga",
+      stok: "f-stok", tahun_terbit: "f-tahun", cover_img: "f-cover", deskripsi: "f-deskripsi",
+    };
+
+    function tampilkanError(errors = {}) {
+      document.querySelectorAll("[data-error]").forEach((p) => {
+        const pesan = errors[p.dataset.error];
+        p.textContent = pesan || "";
+        p.classList.toggle("hidden", !pesan);
+      });
+    }
+
+    function updatePreview() {
+    const src = coverBaru || coverLama;
+    const box = $("cover-preview");
+    box.innerHTML = "";
+    if (!src) { box.textContent = "Preview"; return; }
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "Preview cover";
+    img.className = "w-full h-full object-cover";
+    img.onerror = () => { box.textContent = "Gambar tidak ditemukan"; };
+    box.appendChild(img);
+  }
+
+// Kecilkan gambar (maks 800px) dan ubah ke JPEG supaya ringan dikirim
+function kecilkanGambar(file, maks = 800) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const skala = Math.min(1, maks / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * skala);
+      c.height = Math.round(img.height * skala);
+      const ctx = c.getContext("2d");
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", 0.85));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("File bukan gambar yang valid.")); };
+    img.src = url;
+  });
+}
+
+async function pilihCover() {
+  const input = $("f-cover");
+  const file = input.files[0];
+  document.querySelector('[data-error="cover_img"]').classList.add("hidden");
+  coverBaru = null;
+  if (!file) { updatePreview(); return; }
+  const galat = (pesan) => {
+    input.value = "";
+    updatePreview();
+    document.querySelector('[data-error="cover_img"]').textContent = pesan;
+    document.querySelector('[data-error="cover_img"]').classList.remove("hidden");
+  };
+  if (!/^image\/(png|jpeg|webp)$/.test(file.type)) return galat("Format harus PNG, JPG, atau WEBP.");
+  if (file.size > 10 * 1024 * 1024) return galat("Ukuran gambar maksimal 10 MB.");
+  try {
+    coverBaru = await kecilkanGambar(file);
+    updatePreview();
+  } catch (e) {
+    galat(e.message);
+  }
+}
+
+    function bukaForm(buku = null) {
+      tampilkanError();
+      $("form-buku").reset();
+      $("f-id").value = buku ? buku.id : "";
+      coverBaru = null;
+      coverLama = buku?.cover_img || "";
+      $("modal-form-judul").textContent = buku ? "Edit Buku" : "Tambah Buku Baru";
+      if (buku) {
+        $("f-judul").value = buku.judul;
+        $("f-penulis").value = buku.penulis;
+        $("f-kategori").value = buku.kategori_id;
+        $("f-harga").value = buku.harga;
+        $("f-stok").value = buku.stok;
+        $("f-tahun").value = buku.tahun_terbit;
+        $("f-deskripsi").value = buku.deskripsi || "";
+      }
+      updatePreview();
+      $("modal-form").classList.remove("hidden");
+      $("f-judul").focus();
+    }
+
+    const tutupForm = () => $("modal-form").classList.add("hidden");
+
+    function ambilNilaiForm() {
+      return {
+        judul: $("f-judul").value.trim(),
+        penulis: $("f-penulis").value.trim(),
+        kategori_id: Number($("f-kategori").value) || 0,
+        harga: $("f-harga").value === "" ? NaN : Number($("f-harga").value),
+        stok: $("f-stok").value === "" ? NaN : Number($("f-stok").value),
+        tahun_terbit: $("f-tahun").value === "" ? NaN : Number($("f-tahun").value),
+        cover_img: coverLama,
+        cover_data: coverBaru,
+        deskripsi: $("f-deskripsi").value.trim(),
+      };
+    }
+
+    function validasi(d) {
+      const e = {};
+      const tahunMaks = new Date().getFullYear() + 1;
+      if (!d.judul) e.judul = "Judul wajib diisi.";
+      if (!d.penulis) e.penulis = "Penulis wajib diisi.";
+      if (!d.kategori_id) e.kategori_id = "Pilih kategori.";
+      if (!Number.isInteger(d.harga) || d.harga < 0) e.harga = "Harga harus bilangan bulat 0 atau lebih.";
+      if (!Number.isInteger(d.stok) || d.stok < 0) e.stok = "Stok harus bilangan bulat 0 atau lebih.";
+      if (!Number.isInteger(d.tahun_terbit) || d.tahun_terbit < 1000 || d.tahun_terbit > tahunMaks)
+        e.tahun_terbit = `Tahun terbit harus antara 1000 dan ${tahunMaks}.`;
+      return e;
+    }
+
+    async function simpanBuku(ev) {
+      ev.preventDefault();
+      const data = ambilNilaiForm();
+      const errors = validasi(data);
+      tampilkanError(errors);
+      if (Object.keys(errors).length) {
+        document.getElementById(FIELD[Object.keys(errors)[0]]).focus();
+        return;
+      }
+
+      const id = $("f-id").value;
+      const tombol = $("btn-simpan");
+      tombol.disabled = true;
+      tombol.textContent = "Menyimpan...";
+      try {
+        if (id) {
+          await api(`/books/${id}`, { method: "PUT", body: JSON.stringify(data) });
+          toast("Buku berhasil diperbarui.", "sukses");
+        } else {
+          await api("/books", { method: "POST", body: JSON.stringify(data) });
+          toast("Buku berhasil ditambahkan.", "sukses");
+        }
+        tutupForm();
+        await muatData();
+      } catch (e) {
+        if (e.errors) tampilkanError(e.errors);
+        toast(e.message || "Gagal menyimpan buku.", "error");
+      } finally {
+        tombol.disabled = false;
+        tombol.textContent = "Simpan";
+      }
+    }
+
+    // ===== Dialog hapus =====
+    function bukaHapus(buku) {
+      bukuDihapus = buku;
+      $("hapus-nama").textContent = `"${buku.judul}"`;
+      $("modal-hapus").classList.remove("hidden");
+      $("hapus-batal").focus();
+    }
+    const tutupHapus = () => { bukuDihapus = null; $("modal-hapus").classList.add("hidden"); };
+
+    async function konfirmasiHapus() {
+      if (!bukuDihapus) return;
+      const tombol = $("hapus-ya");
+      tombol.disabled = true;
+      tombol.textContent = "Menghapus...";
+      try {
+        await api(`/books/${bukuDihapus.id}`, { method: "DELETE" });
+        toast("Buku berhasil dihapus.", "sukses");
+        tutupHapus();
+        await muatData();
+      } catch (e) {
+        toast(e.message || "Gagal menghapus buku.", "error");
+      } finally {
+        tombol.disabled = false;
+        tombol.textContent = "Ya, Hapus";
+      }
+    }
+
+    // ===== Event =====
     document.addEventListener("DOMContentLoaded", () => {
+      // Nama admin dari localStorage
       const userStr = localStorage.getItem("user");
       if (userStr) {
         try {
           const user = JSON.parse(userStr);
-          const nameEl = document.getElementById("admin-name");
+          const nameEl = $("admin-name");
           if (nameEl) nameEl.textContent = `Halo, ${user.nama || "Admin"}`;
-        } catch (e) {
-          console.error(e);
-        }
+        } catch (e) { console.error(e); }
       }
+
+      $("btn-tambah").onclick = () => bukaForm();
+      $("form-buku").addEventListener("submit", simpanBuku);
+      $("f-cover").addEventListener("change", pilihCover);
+      document.querySelectorAll("[data-tutup-form]").forEach((b) => (b.onclick = tutupForm));
+      $("hapus-batal").onclick = tutupHapus;
+      $("hapus-ya").onclick = konfirmasiHapus;
+
+      // klik di luar kotak dialog = tutup
+      $("modal-form").addEventListener("mousedown", (e) => { if (e.target === $("modal-form")) tutupForm(); });
+      $("modal-hapus").addEventListener("mousedown", (e) => { if (e.target === $("modal-hapus")) tutupHapus(); });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        if (!$("modal-hapus").classList.contains("hidden")) tutupHapus();
+        else if (!$("modal-form").classList.contains("hidden")) tutupForm();
+      });
+
+      // delegasi klik Edit / Hapus di tabel
+      $("tabel-buku").addEventListener("click", (e) => {
+        const edit = e.target.closest("[data-edit]");
+        const hapus = e.target.closest("[data-hapus]");
+        if (edit) bukaForm(daftarBuku.find((b) => b.id === Number(edit.dataset.edit)));
+        if (hapus) bukaHapus(daftarBuku.find((b) => b.id === Number(hapus.dataset.hapus)));
+      });
+
+      muatData();
     });
 
     function logoutAdmin() {
@@ -89,5 +506,7 @@
       window.location.href = "/index.html";
     }
   </script>
+</body>
+</html>
 </body>
 </html>
