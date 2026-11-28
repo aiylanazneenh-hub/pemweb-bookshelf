@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Data buku hasil kelola admin & cover unggahan
+server/data/
+public/img/upload-*

@@ -36,6 +36,7 @@ function AppIsi() {
 
   const [filter, setFilter] = useState(filterAwal);
   const [bukuDipilih, setBukuDipilih] = useState(null);
+  const [books, setBooks] = useState(bukuAwal);
 
   const [wishlist, setWishlist] = useState([]);
   const [ulasan, setUlasan] = useState(ulasanAwal);
@@ -45,6 +46,26 @@ function AppIsi() {
   const tutupPanel = useCallback(() => setPanelBuka(false), []);
 
   // Logout -> semua wishlist dikosongkan (belum disimpan ke Supabase)
+  useEffect(() => {
+  let batal = false;
+  const muat = () =>
+    ambilBuku()
+      .then((res) => {
+        if (!batal && Array.isArray(res?.data)) setBooks(res.data);
+      })
+      .catch(() => {}); // backend belum jalan: tetap pakai data bawaan
+  muat();
+  // saat tab kembali aktif (mis. setelah dari panel admin), ambil data terbaru
+  const saatAktif = () => {
+    if (document.visibilityState === "visible") muat();
+  };
+  document.addEventListener("visibilitychange", saatAktif);
+  return () => {
+    batal = true;
+    document.removeEventListener("visibilitychange", saatAktif);
+  };
+}, []);
+
   useEffect(() => {
     if (!user) setWishlist([]);
   }, [user]);
@@ -60,7 +81,7 @@ function AppIsi() {
       wishlistUser
         .map((w) => books.find((b) => b.id === w.book_id))
         .filter(Boolean),
-    [wishlistUser]
+    [wishlistUser, books]
   );
 
   const ringkasanUlasan = useMemo(() => {
@@ -70,7 +91,7 @@ function AppIsi() {
       hasil[b.id] = { rata: rataRating(milikBuku), jumlah: milikBuku.length };
     }
     return hasil;
-  }, [ulasan]);
+  }, [ulasan, books]);
 
   const tambahWishlist = (book) => {
     // Wajib login dulu
@@ -141,6 +162,7 @@ function AppIsi() {
           onReset={() => setFilter(filterAwal)}
           onDetail={setBukuDipilih}
           ringkasanUlasan={ringkasanUlasan}
+          books = {books}
         />
       </main>
 

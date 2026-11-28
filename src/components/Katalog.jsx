@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { books, categories } from "../data/books";
+import { categories } from "../data/books";
 import BookCard from "./BookCard";
 
 const judulUrutan = {
@@ -12,6 +12,7 @@ const judulUrutan = {
 const inputClass = "border-2 border-slate-900 bg-white px-3 py-3";
 
 export default function Katalog({
+  books = [],
   filter,
   setFilter,
   onReset,
@@ -23,7 +24,7 @@ export default function Katalog({
   // daftar tahun unik, dari yang terbaru
   const daftarTahun = useMemo(
     () => [...new Set(books.map((b) => b.tahun_terbit))].sort((a, b) => b - a),
-    []
+    [books]
   );
 
   // pencarian + filter + sorting dihitung ulang setiap filter berubah
@@ -46,7 +47,7 @@ export default function Katalog({
     });
 
     return list;
-  }, [kata, kategori, tahun, urut]);
+  }, [books, kata, kategori, tahun, urut]);
 
   const ubah = (kunci, nilai) => setFilter({ ...filter, [kunci]: nilai });
 
